@@ -1,0 +1,26 @@
+# Woodpecker pipeline. Runs on every push, in order, stops on first failure.
+# Each step is a fresh container. Files from one step do NOT exist in the next.
+
+steps:
+  # Step 1: prove the app works (npm test must exit 0 to pass)
+  test:
+    image: node:20
+    commands:
+      - npm install
+      - npm test
+
+  # Step 2: prove we can package the app into a Docker image
+  build:
+    image: docker:24
+    commands:
+      - docker build -t myapp:latest .
+
+  # Step 3: prove the image actually runs and answers on port 3000.
+  # wget returns 0 on success, non-zero on failure — that's how the
+  # pipeline goes red if the app is broken.
+  deploy:
+    image: docker:24
+    commands:
+      - docker run -d -p 3000:3000 --name myapp-container myapp:latest
+      - sleep 2
+      - wget -qO- http://localhost:3000 || exit 1

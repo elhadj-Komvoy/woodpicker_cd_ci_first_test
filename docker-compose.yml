@@ -1,0 +1,41 @@
+# Runs Woodpecker CI locally: server (dashboard) + agent (worker).
+# After `docker compose up -d`, open http://localhost:8000 to log in.
+
+version: "3"
+
+services:
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:latest
+    container_name: woodpecker-server
+    ports:
+      - "8000:8000"
+    environment:
+      # Anyone with the link can sign in (fine for a local demo)
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_HOST=http://localhost:8000
+      # GitHub is the source code provider
+      - WOODPECKER_GITHUB=true
+      - WOODPECKER_GITHUB_CLIENT=${WOODPECKER_GITHUB_CLIENT}
+      - WOODPECKER_GITHUB_SECRET=${WOODPECKER_GITHUB_SECRET}
+      # Shared secret between server and agent (see .env)
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+    volumes:
+      - woodpecker-server-data:/var/lib/woodpecker
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:latest
+    container_name: woodpecker-agent
+    depends_on:
+      - woodpecker-server
+    environment:
+      # Address of the server (inside this docker network)
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+    volumes:
+      # Lets the agent launch pipeline containers using your host's Docker
+      - /var/run/docker.sock:/var/run/docker.sock
+    cap_add:
+      - SYS_ADMIN
+
+volumes:
+  woodpecker-server-data:

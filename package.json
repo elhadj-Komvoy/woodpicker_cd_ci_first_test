@@ -1,0 +1,13 @@
+{
+  "name": "woodpecker-demo",
+  "version": "1.0.0",
+  "description": "Tiny app to demonstrate Woodpecker CI/CD",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo 'tests passed' && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

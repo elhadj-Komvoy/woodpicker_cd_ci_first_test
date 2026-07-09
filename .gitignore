@@ -1,0 +1,13 @@
+# Local notes (private to you)
+idea.md
+
+# Node — never commit dependencies
+node_modules/
+
+# Secrets — never commit real values
+.env
+
+# OS / editor junk
+.DS_Store
+.vscode/
+.idea/
