@@ -21,6 +21,8 @@ steps:
   deploy:
     image: docker:27
     commands:
+      # Force-remove a previous run's container, ignore 'not found' (|| true)
+      - docker rm -f myapp-container 2>/dev/null || true
       - docker run -d -p 3000:3000 --name myapp-container myapp:latest
       - sleep 2
       - wget -qO- http://host.docker.internal:3000 || exit 1
