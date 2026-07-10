@@ -11,7 +11,7 @@ steps:
 
   # Step 2: prove we can package the app into a Docker image
   build:
-    image: docker:24
+    image: docker:27
     commands:
       - docker build -t myapp:latest .
 
@@ -19,7 +19,7 @@ steps:
   # wget returns 0 on success, non-zero on failure — that's how the
   # pipeline goes red if the app is broken.
   deploy:
-    image: docker:24
+    image: docker:27
     commands:
       - docker run -d -p 3000:3000 --name myapp-container myapp:latest
       - sleep 2
